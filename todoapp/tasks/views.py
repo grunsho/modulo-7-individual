@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout, login, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
 from django.views import View
 from .forms import LoginForm
 from .models import Task
 
 # Create your views here.
+@user_passes_test(lambda user: not user.username, login_url='task_list', redirect_field_name=None)
 def index(request):
     return render(request, 'index.html')
 
