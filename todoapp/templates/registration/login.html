@@ -1,0 +1,37 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block title %}TASKS - Iniciar sesión{% endblock %}
+
+{% if user.is_authenticated %}
+    <script>
+        window.location.href = "{% url 'task_list' %}";
+    </script>
+    <body>
+{% else %}
+<body>
+    {% block contenido %}
+        <div class="form-content d-flex justify-content-center">
+            <div class="form-container blog">
+                <div class="form-group">
+                    {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </div>
+                    {% endif %}
+                    <h3 class="py-3 text-center">Iniciar Sesión</h3>
+                    <form class="card p-5" action="" method="post">
+                        {% csrf_token %}
+                        <input type="text" name="username" placeholder="Nombre de usuario">
+                        <br>
+                        <input type="password" name="password" placeholder="Contraseña">
+                        <br>
+                        <input type="submit" value="Iniciar Sesión" class="btn btn-success">
+                        <a href="#"><p class="my-2 text-center">No tengo cuenta</p></a>
+                        </form>
+                </div>
+            </div>
+        </div>
+{% endblock%}
+{% endif %}
+</body>
