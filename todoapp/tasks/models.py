@@ -5,24 +5,26 @@ from django.contrib.auth.models import AbstractUser
 class Usuario(AbstractUser):
     pass
 
-class Tasks(models.Model):
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, blank=False)
+
+    def __str__(self):
+        return self.name
+
+
+class Task(models.Model):
     STATUS_CHOICES = [
         ('Pendiente', 'Pendiente'),
         ('En proceso', 'En proceso'),
         ('Completada', 'Completada'),
     ]
-    TAGS_CHOICES = [
-        ('Trabajo', 'Trabajo'),
-        ('Hogar', 'Hogar'),
-        ('Estudio', 'Estudio'),
-        ('Otro', 'Otro'),
-    ]
-    user = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
+    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, blank=False)
+    title = models.CharField(max_length=100, blank=False)
     description = models.TextField()
     due_date = models.DateTimeField()
-    status = models.CharField(choices=STATUS_CHOICES)
-    tag = models.CharField(choices=TAGS_CHOICES)
+    status = models.CharField(choices=STATUS_CHOICES, blank=False)
+    tag = models.ForeignKey(Tag, on_delete=models.DO_NOTHING, blank=False)
     completed = models.BooleanField(default=False)
     
     def __str__(self):

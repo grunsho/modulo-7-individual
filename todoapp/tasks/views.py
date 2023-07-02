@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
 from .forms import LoginForm
-from .models import Tasks
+from .models import Task
 
 # Create your views here.
 def index(request):
@@ -35,20 +35,20 @@ class LogoutView(View):
 
 @login_required
 def task_list(request):
-    tasks = Tasks.objects.all()
+    tasks = Task.objects.all()
     return render(request, 'task_list.html', {'tasks': tasks})
 
 @login_required
 def task_create(request):
     if request.method == 'POST':
         title = request.POST['title']
-        Tasks.objects.create(title=title)
+        Task.objects.create(title=title)
         return redirect('task_list')
     return render(request, 'task_create.html')
 
 @login_required
 def task_update(request, pk):
-    task = Tasks.objects.get(pk=pk)
+    task = Task.objects.get(pk=pk)
     if request.method == 'POST':
         title = request.POST['title']
         completed = 'completed' in request.POST
@@ -60,7 +60,7 @@ def task_update(request, pk):
 
 @login_required
 def task_delete(request, pk):
-    task = Tasks.objects.get(pk=pk)
+    task = Task.objects.get(pk=pk)
     if request.method == 'POST':
         task.delete()
         return redirect('task_list')
