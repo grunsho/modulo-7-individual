@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
@@ -33,6 +33,16 @@ class LogoutView(View):
     def get(self, request):
         logout(request)
         return redirect('index')
+
+class TaskDetailsView(View):
+    template_name: 'task_details.html'
+    
+    def get(self, request, pk):
+        task = get_object_or_404(Task, pk=pk)
+        form = TaskDetailsView(instance = task)
+        context = {'task': task,
+                    'form': form}
+        return render(request, 'task_details.html', context)
 
 @login_required
 def task_list(request):
