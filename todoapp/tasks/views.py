@@ -3,8 +3,10 @@ from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
 from django.views import View
-from .forms import LoginForm
+from django.views.generic.list import ListView
+from .forms import LoginForm, TaskForm
 from .models import Task
+from django.db.models import Q
 
 # Create your views here.
 @user_passes_test(lambda user: not user.username, login_url='task_list', redirect_field_name=None)
@@ -34,6 +36,7 @@ class LogoutView(View):
         logout(request)
         return redirect('index')
 
+
 class TaskDetailsView(View):
     template_name: 'task_details.html'
     
@@ -44,9 +47,30 @@ class TaskDetailsView(View):
                     'form': form}
         return render(request, 'task_details.html', context)
 
+# class TaskListView(ListView):
+#     model = Task
+#     template_name = 'task_list.html'
+
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
+#         return queryset.order_by('due_date')
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['status'] = self.get_queryset()
+#         return context
+
 @login_required
-def task_list(request):
-    tasks = Task.objects.all().order_by('due_date')
+def task_list(request):  # sourcery skip: assign-if-exp, introduce-default-else
+    if request.method == "POST":
+        form = TaskForm(request.POST)
+        status = request.POST.get('filter_by')
+        print(status)
+        tasks = Task.objects.all().filter(status=status)
+    else:
+        tasks = Task.objects.all().order_by('due_date')
+        print('get')
+        print(request.GET.get('filter_by'))
     return render(request, 'task_list.html', {'tasks': tasks})
 
 @login_required
