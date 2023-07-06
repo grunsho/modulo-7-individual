@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}Crear Tarea{% endblock %}
+
+<body>
+    {% block contenido %}
+        <div class="row align-items-center">
+            <div class="d-flex justify-content-center py-3">
+                <h3>Crear tarea</h3>
+            </div>
+        </div>
+
+        
+            <div class="card">
+                <div class="card-body card-block">
+                    <form method="POST" action="" class="form-horizontal">{% csrf_token %}
+                        <div class="row form-group pb-3">
+                            <div class="col col-md-3">{{ form.title.label }}</div>
+                            <div class="col-12 col-md-9">{{ form.title }}</div>
+                        </div>
+                        <div class="row form-group pb-3">
+                            <div class="col col-md-3">{{ form.description.label }}</div>
+                            <div class="col-12 col-md-9">{{ form.description }}</div>
+                        </div>
+                        <div class="row form-group pb-3">
+                            <div class="col col-md-3">{{ form.due_date.label }}</div>
+                            <div class="col-12 col-md-9">{{ form.due_date }}</div>
+                        </div>
+                        <div class="row form-group pb-3">
+                            <div class="col col-md-3">{{ form.status.label }}</div>
+                            <div class="col-12 col-md-9">{{ form.status }}</div>
+                        </div>
+                        <div class="row form-group pb-3">
+                            <div class="col col-md-3">{{ form.tag.label }}</div>
+                            <div class="col-12 col-md-9">{{ form.tag }}</div>
+                        </div>
+                        <div class="row form-group pb-5">
+                            <div class="col col-md-3">{{ form.completed.label }}</div>
+                            <div class="col-12 col-md-9">{{ form.completed }}</div>
+                        </div>
+                        <input type="submit" class="btn btn-primary"value="Agregar">
+                    <button href="{% url 'task_list' %}" class="btn btn-danger">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+            
+    {% endblock %}
+</body>

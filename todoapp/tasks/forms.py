@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import forms
 from django import forms
-from .models import Usuario, Task
+from .models import Usuario, Task, Comment
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=50, required=True, label='Nombre de Usuario', error_messages={
@@ -11,7 +11,29 @@ class LoginForm(forms.Form):
         model = Usuario
 
 class TaskForm(forms.ModelForm):
-    
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = ['title', 'description', 'due_date', 'status', 'tag', 'completed']
+        labels = {
+            'title': 'Título de la tarea',
+            'description': 'Descripción',
+            'due_date': 'Fecha de vencimiento',
+            'status': 'Estado de la tarea',
+            'tag': 'Etiqueta',
+            'completed': 'Completa'
+        }
+        widgets = {
+            'title': forms.TextInput(attrs= {'class': 'form-control'}),
+            'description': forms.Textarea(attrs= {'class':'form-control'}),
+            'due_date': forms.DateInput(attrs= {'class':'form-control', 'placeholder': 'Fecha', 'type': 'date'}),
+            'status': forms.Select(attrs= {'class':'form-control'}),
+            'tag': forms.Select(attrs= {'class':'form-control'}),
+            'completed': forms.CheckboxInput()
+        }
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text',]
+        labels = { 'text':'Nuevo comentario:'}
+        widgets = { 'text': forms.Textarea(attrs={'class':'form-control'})}

@@ -29,3 +29,11 @@ class Task(models.Model):
     
     def __str__(self):
         return self.title
+
+class Comment(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Comentario creado el {self.created_at}"

@@ -10,7 +10,7 @@
             <h3>Bienvenid@ a tu lista de tareas, {{ user.username }}</h3>
         </div>
         <div class="col-2">
-            <button class="btn btn-success" type="submit"><a href="{%url 'task_list' %}" class="text-reset">Nueva Tarea</a></button>
+            <button class="btn btn-success" type="submit"><a href="{%url 'task_create' %}" class="text-reset">Nueva Tarea</a></button>
         </div>
     </div>
 
@@ -38,24 +38,24 @@
         </form>
     </div>
     <div class="d-flex justify-content-center">
-        <div class="card w-100">
-            <div class="card-body">
-                <div class="row">
+        {% comment %} <div class="card w-100">
+            <div class="card-body"> {% endcomment %}
+                <div class="row  w-100">
                     <div class="col-4 fw-bold">
-                        <span>Título de la tarea</span>
+                        <p>Título de la tarea</p>
                     </div>
                     <div class="col-4 fw-bold">
-                        <span>Fecha de vencimiento</span>
+                        <p>Fecha de vencimiento</p>
                     </div>
                     <div class="col-2 fw-bold">
-                        <span>Etiqueta</span>
+                        <p>Etiqueta</p>
                     </div>
                     <div class="col-2 fw-bold">
-                        <span>Ver detalles</span>
+                        <p>Ver detalles</p>
                     </div>
                 </div>
-            </div>
-        </div>
+            {% comment %} </div>
+        </div> {% endcomment %}
     </div>
     {% for task in tasks %}
     <div class="row">

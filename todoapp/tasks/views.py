@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.utils.decorators import method_decorator
+from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic.list import ListView
-from .forms import LoginForm, TaskForm
-from .models import Task
+from django.views.generic import CreateView
+from .forms import LoginForm, TaskForm, CommentForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Task, Comment
 from django.db.models import Q
 
 # Create your views here.
@@ -30,48 +31,76 @@ class LoginView(View):
             print(context)
             return render(request, 'registration/login.html', context)
 
-@method_decorator(login_required, name='dispatch')
-class LogoutView(View):
+
+class LogoutView(LoginRequiredMixin, View):
     def get(self, request):
         logout(request)
         return redirect('index')
 
 
-class TaskDetailsView(View):
+class TaskDetailsView(LoginRequiredMixin, View):
     template_name: 'task_details.html'
     
     def get(self, request, pk):
         task = get_object_or_404(Task, pk=pk)
         form = TaskDetailsView(instance = task)
+        commentform = CommentForm
+        comments = Comment.objects.filter(task_id=task.id)
+        print(comments)
         context = {'task': task,
-                    'form': form}
+                    'form': form,
+                    'commentform': commentform,
+                    'comments': comments}
         return render(request, 'task_details.html', context)
 
-# class TaskListView(ListView):
-#     model = Task
-#     template_name = 'task_list.html'
+    def post(self, request, pk):
+        task = get_object_or_404(Task, pk=pk)
+        commentform = CommentForm(data=request.POST)
+        comments = Comment.objects.filter(task_id=task.id)
+        if commentform.is_valid():
+            new_comment = commentform.save(commit=False)
+            new_comment.task_id = task.id
+            new_comment.save()
+        context = {
+            'task': task,
+                'commentform': commentform,
+                'comments': comments,
+                'new_comment': new_comment
+        }
+        
+        return render(request, 'task_details.html', context)
 
-#     def get_queryset(self):
-#         queryset = super().get_queryset()
-#         return queryset.order_by('due_date')
 
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['status'] = self.get_queryset()
-#         return context
+class TaskListView(LoginRequiredMixin, View):
+    model = Task
+    template_name = 'task_list.html'
+    
+    def get(self, request):
+        tasks = Task.objects.filter(user=request.user).exclude(status='Completada').order_by('due_date')
+        context = {'tasks': tasks}
+        return render(request, self.template_name, context)
 
-@login_required
-def task_list(request):  # sourcery skip: assign-if-exp, introduce-default-else
-    if request.method == "POST":
-        form = TaskForm(request.POST)
-        status = request.POST.get('filter_by')
-        print(status)
-        tasks = Task.objects.all().filter(status=status)
-    else:
-        tasks = Task.objects.all().order_by('due_date')
-        print('get')
-        print(request.GET.get('filter_by'))
-    return render(request, 'task_list.html', {'tasks': tasks})
+    def post(self, request):
+        filter_by = request.POST.get('filter_by')
+        tasks = Task.objects.order_by('due_date').filter(status=filter_by)
+        context = {'tasks': tasks}
+        return render(request, self.template_name, context)
+
+
+class TaskCreateView(CreateView):
+    model = Task
+    form_class = TaskForm
+    template_name = 'task_create.html'
+    success_url = reverse_lazy('task_list')
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(TaskCreateView, self).form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.get_form()
+        return context
 
 @login_required
 def task_create(request):
