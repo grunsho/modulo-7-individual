@@ -94,17 +94,21 @@ class TaskListView(LoginRequiredMixin, View):
         print(filter_by)
         print(tagfilter)
         tags = Tag.objects.all()
-        
+
         if tagfilter is None:
-            if filter_by is not None:
-                tasks = Task.objects.filter(status=filter_by).exclude(status="Completa").order_by('due_date')
-            else:
-                tasks = Task.objects.filter(user=request.user).exclude(status='Completa').order_by('due_date')
+            tasks = (
+                Task.objects.filter(status=filter_by)
+                .exclude(status="Completa")
+                .order_by('due_date')
+                if filter_by is not None
+                else Task.objects.filter(user=request.user)
+                .exclude(status='Completa')
+                .order_by('due_date')
+            )
+        elif filter_by is not None:
+            tasks = Task.objects.filter(status=filter_by, tag=tagfilter).exclude(status="Completa").order_by('due_date')
         else:
-            if filter_by is not None:
-                tasks = Task.objects.filter(status=filter_by, tag=tagfilter).exclude(status="Completa").order_by('due_date')
-            else:
-                tasks = Task.objects.filter(tag=tagfilter).exclude(status='Completada').order_by('due_date')
+            tasks = Task.objects.filter(tag=tagfilter).exclude(status='Completada').order_by('due_date')
         context = {'tasks': tasks,
                     'tags': tags,
                     'form': self.form()}
@@ -130,7 +134,6 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 class TaskUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
     form_class = TaskForm
-    # fields = '__all__'
     template_name = 'task_create.html'
     success_url = reverse_lazy('task_list')
 
@@ -142,13 +145,20 @@ class TaskDeleteView(LoginRequiredMixin, DeleteView):
     
 
 class TaskCompleteView(LoginRequiredMixin, UpdateView):
-    pass
-    
-    
-@login_required
-def task_delete(request, pk):
-    task = Task.objects.get(pk=pk)
-    if request.method == 'POST':
-        task.delete()
-        return redirect('task_list')
-    return render(request, 'task_delete.html', {'task': task})
+    model = Task
+    form_class = TaskForm
+    fields = {
+        'status', 'completed'
+    }
+    template_name = 'task_details.html'
+    success_url = reverse_lazy('task_list')
+
+    def post(self, request, pk):
+        
+        task = get_object_or_404(Task, pk=pk)
+        task.completed = True
+        task.status = "Completa"
+        task.save()
+        
+        return render(request, self.template_name, {'task': task})
+        

@@ -13,16 +13,16 @@
     </div>
     <div class="row align-items-center pt-2">
         <div class="col-3 d-flex justify-content-center">
-            <a href="{% url 'task_update' task.id %}" role="button" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i> Editar</a> 
+            <a href="{% url 'task_update' task.id %}" role="button" class="btn btn-primary"><i class="fa-solid fa-pen-to-square"></i> Editar</a> 
         </div>
         <div class="col-3 d-flex justify-content-center">
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#fm-modal-grid"><i class="fa fa-circle-info"></i> Eliminar</button>
         </div>
         <div class="col-3 d-flex justify-content-center">
-            <a href="{% url 'task_list' %}" role="button" class="btn btn-success"><i class="fa-solid fa-check"></i> Completar</a> 
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#complete-modal-grid"><i class="fa-solid fa-check"></i> Completar</button>
         </div>
         <div class="col-3 d-flex justify-content-center">
-            <a href="{% url 'task_list' %}" role="button" class="btn btn-success"><i class="fa-solid fa-rotate-left"></i> Regresar</a> 
+            <a href="{% url 'task_list' %}" role="button" class="btn btn-warning"><i class="fa-solid fa-rotate-left"></i> Regresar</a> 
         </div>
     </div>
 
@@ -101,6 +101,36 @@
                 <div class="modal-footer">
                     <form action="{% url 'task_delete' pk=task.pk %}" method="POST">{% csrf_token %}
                         <button class="btn btn-danger">Eliminar</button>
+                    </form>
+                    <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="complete-modal-grid" tabindex="-1"
+         role="dialog" aria-labelledBy="fm-modal-grid"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Completar tarea</h5>
+                    <button class="close" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12 col-sm-6">
+                                <p>¿Seguro desea marcar la tarea como completa?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <form action="{% url 'task_complete' pk=task.pk %}" method="POST">{% csrf_token %}
+                        <button class="btn btn-success">Completar</button>
                     </form>
                     <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
                 </div>

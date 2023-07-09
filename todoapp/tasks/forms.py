@@ -38,5 +38,6 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['text',]
+        ordering = ['created_at']
         labels = { 'text':'Nuevo comentario:'}
         widgets = { 'text': forms.Textarea(attrs={'class':'form-control'})}
