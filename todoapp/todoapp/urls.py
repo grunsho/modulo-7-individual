@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from tasks.views import index, LoginView, LogoutView, TaskDetailsView, TaskListView, TaskCreateView
+from tasks.views import index, LoginView, LogoutView, TaskDetailsView, TaskListView, TaskCreateView, TaskUpdateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -9,6 +9,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('tasks/', TaskListView.as_view(), name='task_list'),
     path('task_create', TaskCreateView.as_view(), name='task_create'),
+    path('task_edit/<int:pk>/', TaskUpdateView.as_view(), name='task_update'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
 ]

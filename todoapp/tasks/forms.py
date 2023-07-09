@@ -11,6 +11,9 @@ class LoginForm(forms.Form):
         model = Usuario
 
 class TaskForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(TaskForm, self).__init__(*args, **kwargs)
+        self.fields['tag'].empty_label = 'Filtrar tareas por etiqueta'
     class Meta:
         model = Task
         fields = ['title', 'description', 'due_date', 'status', 'tag', 'completed']
@@ -25,7 +28,7 @@ class TaskForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs= {'class': 'form-control'}),
             'description': forms.Textarea(attrs= {'class':'form-control'}),
-            'due_date': forms.DateInput(attrs= {'class':'form-control', 'placeholder': 'Fecha', 'type': 'date'}),
+            'due_date': forms.DateInput(format=('%Y-%m-%d'), attrs= {'class':'form-control', 'placeholder': 'Fecha', 'type': 'date'}),
             'status': forms.Select(attrs= {'class':'form-control'}),
             'tag': forms.Select(attrs= {'class':'form-control'}),
             'completed': forms.CheckboxInput()

@@ -13,7 +13,7 @@
     </div>
     <div class="row align-items-center pt-2">
         <div class="col-3 d-flex justify-content-center">
-            <a href="{% url 'task_list' %}" role="button" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i> Editar</a> 
+            <a href="{% url 'task_update' task.id %}" role="button" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i> Editar</a> 
         </div>
         <div class="col-3 d-flex justify-content-center">
             <a href="{% url 'task_list' %}" role="button" class="btn btn-danger"><i class="fa fa-circle-info"></i> Eliminar</a> 

@@ -3,10 +3,10 @@ from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 from .forms import LoginForm, TaskForm, CommentForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Task, Comment
+from .models import Task, Comment, Tag
 from django.db.models import Q
 
 # Create your views here.
@@ -73,21 +73,45 @@ class TaskDetailsView(LoginRequiredMixin, View):
 
 class TaskListView(LoginRequiredMixin, View):
     model = Task
+    form = TaskForm
     template_name = 'task_list.html'
     
-    def get(self, request):
+    def get(self, request):  # sourcery skip: class-extract-method
         tasks = Task.objects.filter(user=request.user).exclude(status='Completada').order_by('due_date')
-        context = {'tasks': tasks}
+        tags = Tag.objects.all()
+        context = {'tasks': tasks,
+                    'tags': tags,
+                    'form': self.form()}
         return render(request, self.template_name, context)
 
     def post(self, request):
         filter_by = request.POST.get('filter_by')
-        tasks = Task.objects.order_by('due_date').filter(status=filter_by)
-        context = {'tasks': tasks}
+        if request.POST.get('tagfilter') is not None:
+            tagname = request.POST.get('tagfilter')
+            tagfilter = Tag.objects.get(name=tagname)
+        else:
+            tagfilter = None
+        print(filter_by)
+        print(tagfilter)
+        tags = Tag.objects.all()
+        
+        if tagfilter is None:
+            if filter_by is not None:
+                tasks = Task.objects.filter(status=filter_by).exclude(status="Completada").order_by('due_date')
+            else:
+                tasks = Task.objects.filter(user=request.user).exclude(status='Completada').order_by('due_date')
+        else:
+            if filter_by is not None:
+                tasks = Task.objects.filter(status=filter_by, tag=tagfilter).exclude(status="Completada").order_by('due_date')
+            else:
+                tasks = Task.objects.filter(tag=tagfilter).exclude(status='Completada').order_by('due_date')
+        context = {'tasks': tasks,
+                    'tags': tags,
+                    'form': self.form()}
         return render(request, self.template_name, context)
 
 
-class TaskCreateView(CreateView):
+class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
     form_class = TaskForm
     template_name = 'task_create.html'
@@ -102,14 +126,16 @@ class TaskCreateView(CreateView):
         context['form'] = self.get_form()
         return context
 
-@login_required
-def task_create(request):
-    if request.method == 'POST':
-        title = request.POST['title']
-        Task.objects.create(title=title)
-        return redirect('task_list')
-    return render(request, 'task_create.html')
 
+class TaskUpdateView(LoginRequiredMixin, UpdateView):
+    model = Task
+    form_class = TaskForm
+    # fields = '__all__'
+    template_name = 'task_create.html'
+    success_url = reverse_lazy('task_list')
+    
+    
+    
 @login_required
 def task_update(request, pk):
     task = Task.objects.get(pk=pk)

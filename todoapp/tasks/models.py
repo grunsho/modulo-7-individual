@@ -17,8 +17,9 @@ class Task(models.Model):
     STATUS_CHOICES = [
         ('Pendiente', 'Pendiente'),
         ('En proceso', 'En proceso'),
-        ('Completada', 'Completada'),
+        ('Completa', 'Completa'),
     ]
+    
     user = models.ForeignKey(Usuario, on_delete=models.CASCADE, blank=False)
     title = models.CharField(max_length=100, blank=False)
     description = models.TextField()
