@@ -16,7 +16,7 @@
             <a href="{% url 'task_update' task.id %}" role="button" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i> Editar</a> 
         </div>
         <div class="col-3 d-flex justify-content-center">
-            <a href="{% url 'task_list' %}" role="button" class="btn btn-danger"><i class="fa fa-circle-info"></i> Eliminar</a> 
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#fm-modal-grid"><i class="fa fa-circle-info"></i> Eliminar</button>
         </div>
         <div class="col-3 d-flex justify-content-center">
             <a href="{% url 'task_list' %}" role="button" class="btn btn-success"><i class="fa-solid fa-check"></i> Completar</a> 
@@ -76,6 +76,36 @@
                 <button type="submit" value="Guardar Comentario" name="saveCommentBtn" class="btn btn-success">Enviar comentario</button>
             </form>
         </div>  
+    </div>
+
+    <div class="modal fade" id="fm-modal-grid" tabindex="-1"
+         role="dialog" aria-labelledBy="fm-modal-grid"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Eliminar tarea</h5>
+                    <button class="close" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12 col-sm-6">
+                                <p>¿Seguro desea eliminar la tarea? Esta acción no puede revertirse.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <form action="{% url 'task_delete' pk=task.pk %}" method="POST">{% csrf_token %}
+                        <button class="btn btn-danger">Eliminar</button>
+                    </form>
+                    <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>

@@ -3,7 +3,7 @@ from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, DeleteView
 from .forms import LoginForm, TaskForm, CommentForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Task, Comment, Tag
@@ -77,7 +77,7 @@ class TaskListView(LoginRequiredMixin, View):
     template_name = 'task_list.html'
     
     def get(self, request):  # sourcery skip: class-extract-method
-        tasks = Task.objects.filter(user=request.user).exclude(status='Completada').order_by('due_date')
+        tasks = Task.objects.filter(user=request.user).exclude(status='Completa').order_by('due_date')
         tags = Tag.objects.all()
         context = {'tasks': tasks,
                     'tags': tags,
@@ -97,12 +97,12 @@ class TaskListView(LoginRequiredMixin, View):
         
         if tagfilter is None:
             if filter_by is not None:
-                tasks = Task.objects.filter(status=filter_by).exclude(status="Completada").order_by('due_date')
+                tasks = Task.objects.filter(status=filter_by).exclude(status="Completa").order_by('due_date')
             else:
-                tasks = Task.objects.filter(user=request.user).exclude(status='Completada').order_by('due_date')
+                tasks = Task.objects.filter(user=request.user).exclude(status='Completa').order_by('due_date')
         else:
             if filter_by is not None:
-                tasks = Task.objects.filter(status=filter_by, tag=tagfilter).exclude(status="Completada").order_by('due_date')
+                tasks = Task.objects.filter(status=filter_by, tag=tagfilter).exclude(status="Completa").order_by('due_date')
             else:
                 tasks = Task.objects.filter(tag=tagfilter).exclude(status='Completada').order_by('due_date')
         context = {'tasks': tasks,
@@ -133,21 +133,18 @@ class TaskUpdateView(LoginRequiredMixin, UpdateView):
     # fields = '__all__'
     template_name = 'task_create.html'
     success_url = reverse_lazy('task_list')
-    
-    
-    
-@login_required
-def task_update(request, pk):
-    task = Task.objects.get(pk=pk)
-    if request.method == 'POST':
-        title = request.POST['title']
-        completed = 'completed' in request.POST
-        task.title = title
-        task.completed = completed
-        task.save()
-        return redirect('task_list')
-    return render(request, 'task_update.html', {'task': task})
 
+
+class TaskDeleteView(LoginRequiredMixin, DeleteView):
+    model = Task
+    success_url = reverse_lazy('task_list')
+    template_name = 'task_details.html'
+    
+
+class TaskCompleteView(LoginRequiredMixin, UpdateView):
+    pass
+    
+    
 @login_required
 def task_delete(request, pk):
     task = Task.objects.get(pk=pk)
