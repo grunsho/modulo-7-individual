@@ -16,10 +16,11 @@ class TaskForm(forms.ModelForm):
         self.fields['tag'].empty_label = 'Filtrar tareas por etiqueta'
     class Meta:
         model = Task
-        fields = ['title', 'description', 'due_date', 'status', 'tag', 'completed']
+        fields = ['title', 'description', 'user', 'due_date', 'status', 'tag', 'completed']
         labels = {
             'title': 'Título de la tarea',
             'description': 'Descripción',
+            'user': 'Usuario asignado',
             'due_date': 'Fecha de vencimiento',
             'status': 'Estado de la tarea',
             'tag': 'Etiqueta',
@@ -28,6 +29,7 @@ class TaskForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs= {'class': 'form-control'}),
             'description': forms.Textarea(attrs= {'class':'form-control'}),
+            'user': forms.Select(attrs= {'class':'form-control'}),
             'due_date': forms.DateInput(format=('%Y-%m-%d'), attrs= {'class':'form-control', 'placeholder': 'Fecha', 'type': 'date'}),
             'status': forms.Select(attrs= {'class':'form-control'}),
             'tag': forms.Select(attrs= {'class':'form-control'}),
@@ -41,3 +43,10 @@ class CommentForm(forms.ModelForm):
         ordering = ['created_at']
         labels = { 'text':'Nuevo comentario:'}
         widgets = { 'text': forms.Textarea(attrs={'class':'form-control'})}
+
+class UserTaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['user']
+        labels = {'user': 'Usuario asignado'}
+        widgets = {'user': forms.Select(attrs= {'class':'form-control'})}

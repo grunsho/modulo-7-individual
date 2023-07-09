@@ -34,6 +34,16 @@ Tarea
                         <div class="col-12 col-md-9">{{ form.description }}</div>
                     </div>
                     <div class="row form-group pb-3">
+                        {% comment %} <div class="col col-md-3 fw-bold">{{ form.user.label }}</div>
+                        <div class="col-12 col-md-9">{{ form.user }}</div> {% endcomment %}
+                        <select name="usuario_tarea" class="form-select" id="usuario_tarea">
+                            <option selected="selected" disabled>Seleccionar usuario</option>
+                            {% for user in users %}
+                            <option value="{{ user }}">{{ user }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row form-group pb-3">
                         <div class="col col-md-3 fw-bold">{{ form.due_date.label }}</div>
                         <div class="col-12 col-md-9">{{ form.due_date }}</div>
                     </div>

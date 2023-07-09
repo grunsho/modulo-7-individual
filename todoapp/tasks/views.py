@@ -4,9 +4,9 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
-from .forms import LoginForm, TaskForm, CommentForm
+from .forms import LoginForm, TaskForm, CommentForm, TaskForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Task, Comment, Tag
+from .models import Task, Comment, Tag, Usuario
 from django.db.models import Q
 
 # Create your views here.
@@ -39,7 +39,7 @@ class LogoutView(LoginRequiredMixin, View):
 
 
 class TaskDetailsView(LoginRequiredMixin, View):
-    template_name: 'task_details.html'
+    template_name = 'task_details.html'
     
     def get(self, request, pk):
         task = get_object_or_404(Task, pk=pk)
@@ -115,21 +115,25 @@ class TaskListView(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
 
-class TaskCreateView(LoginRequiredMixin, CreateView):
-    model = Task
-    form_class = TaskForm
+class TaskCreateView(LoginRequiredMixin, View):
     template_name = 'task_create.html'
-    success_url = reverse_lazy('task_list')
-    
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super(TaskCreateView, self).form_valid(form)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = self.get_form()
-        return context
 
+    def get(self, request):
+        form = TaskForm
+        owner = Task.objects.get('user')
+        context = {'form': form,
+                    'owner': owner}
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        form = TaskForm(request.POST)
+        owner = Task.objects.get('user')
+        if form.is_valid():
+            form.save()
+            return redirect('task_list')
+        context = {'form': form,
+                    'owner': owner}
+        return render(request, self.template, context)
 
 class TaskUpdateView(LoginRequiredMixin, UpdateView):
     model = Task

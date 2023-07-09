@@ -32,9 +32,18 @@ class Task(models.Model):
         return self.title
 
 class Comment(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"Comentario creado el {self.created_at}"
+
+class Priority(models.Model):
+    PRIORITY_CHOICES = [
+        ('Urgente', 'Urgente'),
+        ('Alta', 'Alta'),
+        ('Media', 'Media'),
+        ('Baja', 'Baja')
+    ]
+    priority = models.CharField(choices=PRIORITY_CHOICES, blank=False)

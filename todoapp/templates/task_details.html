@@ -33,6 +33,12 @@
                     <h4 class="card-title text-center">{{ task.title }}</h4>
                     <p class="card-text text-center">{{ task.description }}</p>
                     <div class="row">
+                        <div class="col-12">
+                            <label for="usuario" class="fw-bold">Usuario asignado:</label>
+                            {{form.user}}
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-6">
                             <label for="vencimiento" class="fw-bold">Fecha de vencimiento:</label>
                             <span>{{ task.due_date }}</span>
