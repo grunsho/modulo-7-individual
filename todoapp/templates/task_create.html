@@ -34,14 +34,17 @@ Tarea
                         <div class="col-12 col-md-9">{{ form.description }}</div>
                     </div>
                     <div class="row form-group pb-3">
+                        <div class="col col-md-3 fw-bold">Usuario asignado</div>
                         {% comment %} <div class="col col-md-3 fw-bold">{{ form.user.label }}</div>
                         <div class="col-12 col-md-9">{{ form.user }}</div> {% endcomment %}
-                        <select name="usuario_tarea" class="form-select" id="usuario_tarea">
-                            <option selected="selected" disabled>Seleccionar usuario</option>
-                            {% for user in users %}
-                            <option value="{{ user }}">{{ user }}</option>
-                            {% endfor %}
-                        </select>
+                        <div class="col-12 col-md-9">
+                            <select name="usuario_tarea" class="form-select" id="usuario_tarea">
+                                <option selected="selected" disabled>Seleccionar usuario</option>
+                                {% for user in users %}
+                                <option value="{{ user }}">{{ user }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>  
                     </div>
                     <div class="row form-group pb-3">
                         <div class="col col-md-3 fw-bold">{{ form.due_date.label }}</div>
@@ -50,6 +53,10 @@ Tarea
                     <div class="row form-group pb-3">
                         <div class="col col-md-3 fw-bold">{{ form.status.label }}</div>
                         <div class="col-12 col-md-9">{{ form.status }}</div>
+                    </div>
+                    <div class="row form-group pb-3">
+                        <div class="col col-md-3 fw-bold">{{ form.priority.label }}</div>
+                        <div class="col-12 col-md-9">{{ form.priority }}</div>
                     </div>
                     <div class="row form-group pb-3">
                         <div class="col col-md-3 fw-bold">{{ form.tag.label }}</div>

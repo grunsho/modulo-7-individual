@@ -32,24 +32,44 @@
                 <div class="card-body">
                     <h4 class="card-title text-center">{{ task.title }}</h4>
                     <p class="card-text text-center">{{ task.description }}</p>
-                    <div class="row">
-                        <div class="col-12">
+                    <div class="row justify-content-center">
+                        <div class="col-4 text-center">
                             <label for="usuario" class="fw-bold">Usuario asignado:</label>
-                            {{form.user}}
+                            <span>{{user}}</span>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-6">
+                        <div class="col-4 text-center">
                             <label for="vencimiento" class="fw-bold">Fecha de vencimiento:</label>
                             <span>{{ task.due_date }}</span>
                         </div>
-                        <div class="col">
+                        <div class="col-4 text-center">
                             <label for="estado" class="fw-bold">Estado actual:</label>
                             {{task.status}}
                         </div>
-                        <div class="col">
+                    </div>
+                    <div class="row justify-content-between py-5">
+                        <div class="col-6 text-center">
                             <label for="etiqueta" class="fw-bold">Etiqueta:</label>
                             <span class="badge text-bg-primary">{{ task.tag }}</span>
+                        </div>
+                        <div class="col-6 text-center">
+                            <label for="prioridad" class="fw-bold">Prioridad:</label>
+                            {% if task.priority.priority == "Urgente" %}
+                            {% with badge_class="text-bg-danger" %}
+                                <span class="badge {{ badge_class }}">{{ task.priority }}</span>
+                            {% endwith %}
+                        {% elif task.priority.priority == "Alta" %}
+                            {% with badge_class="text-bg-warning" %}
+                                <span class="badge {{ badge_class }}">{{ task.priority }}</span>
+                            {% endwith %}
+                        {% elif task.priority.priority == "Media" %}
+                            {% with badge_class="text-bg-success" %}
+                                <span class="badge {{ badge_class }}">{{ task.priority }}</span>
+                            {% endwith %}
+                        {% else %}
+                            {% with badge_class="text-bg-light" %}
+                                <span class="badge {{ badge_class }}">{{ task.priority }}</span>
+                            {% endwith %}
+                        {% endif %}
                         </div>
                     </div>
                 </div>

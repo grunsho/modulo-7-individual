@@ -12,6 +12,11 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+class Priority(models.Model):
+    priority = models.CharField(max_length=100, blank=False)
+    
+    def __str__(self):
+        return self.priority
 
 class Task(models.Model):
     STATUS_CHOICES = [
@@ -23,7 +28,8 @@ class Task(models.Model):
     user = models.ForeignKey(Usuario, on_delete=models.CASCADE, blank=False)
     title = models.CharField(max_length=100, blank=False)
     description = models.TextField()
-    due_date = models.DateTimeField()
+    due_date = models.DateField()
+    priority = models.ForeignKey(Priority, on_delete=models.DO_NOTHING, null=True, blank=True)
     status = models.CharField(choices=STATUS_CHOICES, blank=False)
     tag = models.ForeignKey(Tag, on_delete=models.DO_NOTHING, blank=False)
     completed = models.BooleanField(default=False)
@@ -38,12 +44,3 @@ class Comment(models.Model):
     
     def __str__(self):
         return f"Comentario creado el {self.created_at}"
-
-class Priority(models.Model):
-    PRIORITY_CHOICES = [
-        ('Urgente', 'Urgente'),
-        ('Alta', 'Alta'),
-        ('Media', 'Media'),
-        ('Baja', 'Baja')
-    ]
-    priority = models.CharField(choices=PRIORITY_CHOICES, blank=False)

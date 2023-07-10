@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import forms
 from django import forms
-from .models import Usuario, Task, Comment
+from .models import Usuario, Task, Comment, Priority
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=50, required=True, label='Nombre de Usuario', error_messages={
@@ -16,13 +16,14 @@ class TaskForm(forms.ModelForm):
         self.fields['tag'].empty_label = 'Filtrar tareas por etiqueta'
     class Meta:
         model = Task
-        fields = ['title', 'description', 'user', 'due_date', 'status', 'tag', 'completed']
+        fields = ['title', 'description', 'user', 'due_date', 'status', 'priority', 'tag', 'completed']
         labels = {
             'title': 'Título de la tarea',
             'description': 'Descripción',
             'user': 'Usuario asignado',
             'due_date': 'Fecha de vencimiento',
             'status': 'Estado de la tarea',
+            'priority': 'Prioridad',
             'tag': 'Etiqueta',
             'completed': 'Completa'
         }
@@ -30,8 +31,9 @@ class TaskForm(forms.ModelForm):
             'title': forms.TextInput(attrs= {'class': 'form-control'}),
             'description': forms.Textarea(attrs= {'class':'form-control'}),
             'user': forms.Select(attrs= {'class':'form-control'}),
-            'due_date': forms.DateInput(format=('%Y-%m-%d'), attrs= {'class':'form-control', 'placeholder': 'Fecha', 'type': 'date'}),
+            'due_date': forms.DateInput(format=('%d-%m-%Y'), attrs= {'class':'form-control', 'placeholder': 'Fecha', 'type': 'date'}),
             'status': forms.Select(attrs= {'class':'form-control'}),
+            'priority': forms.Select(attrs={'class':'form-control'}),
             'tag': forms.Select(attrs= {'class':'form-control'}),
             'completed': forms.CheckboxInput()
         }
@@ -44,9 +46,7 @@ class CommentForm(forms.ModelForm):
         labels = { 'text':'Nuevo comentario:'}
         widgets = { 'text': forms.Textarea(attrs={'class':'form-control'})}
 
-class UserTaskForm(forms.ModelForm):
+class PriorityForm(forms.ModelForm):
     class Meta:
-        model = Task
-        fields = ['user']
-        labels = {'user': 'Usuario asignado'}
-        widgets = {'user': forms.Select(attrs= {'class':'form-control'})}
+        model = Priority
+        fields = '__all__'

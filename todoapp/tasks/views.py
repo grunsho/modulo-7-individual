@@ -6,7 +6,7 @@ from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
 from .forms import LoginForm, TaskForm, CommentForm, TaskForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Task, Comment, Tag, Usuario
+from .models import Task, Comment, Tag, Usuario, Priority
 from django.db.models import Q
 
 # Create your views here.
@@ -44,11 +44,14 @@ class TaskDetailsView(LoginRequiredMixin, View):
     def get(self, request, pk):
         task = get_object_or_404(Task, pk=pk)
         form = TaskDetailsView(instance = task)
+        priority = Priority.objects.all()
+        print(priority)
         commentform = CommentForm
         comments = Comment.objects.filter(task_id=task.id)
         print(comments)
         context = {'task': task,
                     'form': form,
+                    'priority': priority,
                     'commentform': commentform,
                     'comments': comments}
         return render(request, 'task_details.html', context)
@@ -73,15 +76,17 @@ class TaskDetailsView(LoginRequiredMixin, View):
 
 class TaskListView(LoginRequiredMixin, View):
     model = Task
-    form = TaskForm
+    form_class = TaskForm
     template_name = 'task_list.html'
     
     def get(self, request):  # sourcery skip: class-extract-method
-        tasks = Task.objects.filter(user=request.user).exclude(status='Completa').order_by('due_date')
+        tasks = Task.objects.all().exclude(status='Completa').order_by('due_date')
         tags = Tag.objects.all()
+        priorities = Priority.objects.all()
         context = {'tasks': tasks,
                     'tags': tags,
-                    'form': self.form()}
+                    'priorities': priorities,
+                    'form': self.form_class()}
         return render(request, self.template_name, context)
 
     def post(self, request):
@@ -101,7 +106,7 @@ class TaskListView(LoginRequiredMixin, View):
                 .exclude(status="Completa")
                 .order_by('due_date')
                 if filter_by is not None
-                else Task.objects.filter(user=request.user)
+                else Task.objects.all()
                 .exclude(status='Completa')
                 .order_by('due_date')
             )
@@ -119,21 +124,22 @@ class TaskCreateView(LoginRequiredMixin, View):
     template_name = 'task_create.html'
 
     def get(self, request):
-        form = TaskForm
-        owner = Task.objects.get('user')
+        form = TaskForm()
+        users = Usuario.objects.all()
+        priorities = Priority.objects.all()
         context = {'form': form,
-                    'owner': owner}
+                   'priorities':priorities,
+                    'users': users}
         return render(request, self.template_name, context)
 
     def post(self, request):
         form = TaskForm(request.POST)
-        owner = Task.objects.get('user')
+        # owner = Task.objects.get('user')
         if form.is_valid():
             form.save()
             return redirect('task_list')
-        context = {'form': form,
-                    'owner': owner}
-        return render(request, self.template, context)
+        context = {'form': form}
+        return redirect('task_list')
 
 class TaskUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
